@@ -1,9 +1,9 @@
 // pages/api/webhook.ts
 
-import type { NextApiRequest, NextApiResponse } from 'next';
-import crypto from 'crypto';
+import type { NextApiRequest, NextApiResponse } from "next";
+import crypto from "crypto";
 
-const API_KEY = process.env.API_KEY as string; // Access the API key from environment variables
+const API_KEY = "4B3548E5A92FFED2C83ACA9E365A4D5F"; // Access the API key from environment variables
 
 const verifySignature = (body: string, signature: string): boolean => {
   const src = `${body}/${API_KEY}`;
@@ -15,16 +15,16 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method === 'POST') {
+  if (req.method === "POST") {
     const body = await new Promise<string>((resolve, reject) => {
-      let data = '';
-      req.on('data', chunk => {
+      let data = "";
+      req.on("data", (chunk) => {
         data += chunk;
       });
-      req.on('end', () => resolve(data));
-      req.on('error', reject);
+      req.on("end", () => resolve(data));
+      req.on("error", reject);
     });
-    const signature = req.headers['sign'] as string;
+    const signature = req.headers["sign"] as string;
 
     if (!verifySignature(body, signature)) {
       res.status(401).json({
@@ -44,7 +44,7 @@ export default async function handler(
       message: "Webhook received",
     });
   } else {
-    res.setHeader('Allow', ['POST']);
+    res.setHeader("Allow", ["POST"]);
     res.status(405).json({
       status: 405,
       message: "Method Not Allowed",
