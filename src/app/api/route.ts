@@ -1,39 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server';
-import crypto from 'crypto';
+// pages/api/notify.js
+import { NextApiRequest, NextApiResponse } from 'next';
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === 'POST') {
+    try {
+      const body = req.body;
+      console.log('Webhook received:', body);
 
-const API_KEY = "4B3548E5A92FFED2C83ACA9E365A4D5F";
+      // Process the webhook data here
+      handleTrackingUpdate(body);
 
-const verifySignature = (body: string, signature: string): boolean => {
-  const src = `${body}/${API_KEY}`;
-  const hash = crypto.createHash("sha256").update(src).digest("hex");
-  return hash === signature;
-};
-
-export async function POST(request: NextRequest) {
-  const body = await request.text();
-  const signature = request.headers.get('sign') as string;
-
-  if (!verifySignature(body, signature)) {
-    return NextResponse.json({
-      status: 401,
-      message: "Unauthorized",
-    }, { status: 401 });
+      res.status(200).json({ message: 'Webhook received successfully' });
+    } catch (error) {
+      console.error('Error processing webhook:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  } else {
+    res.status(405).json({ error: 'Method Not Allowed' });
   }
-
-  const data = JSON.parse(body);
-  console.log("Received webhook:", data);
-
-  // Process the webhook data here
-
-  return NextResponse.json({
-    status: 200,
-    message: "Webhook received",
-  }, { status: 200 });
 }
 
-export async function GET() {
-  return NextResponse.json({
-    status: 405,
-    message: "Method Not Allowed",
-  }, { status: 405 });
+function handleTrackingUpdate(data:any) {
+  // Add your logic to handle the tracking update here
+  console.log('Processing tracking update:', data);
+
+  // Example: Log the tracking number and status
+  const trackingNumber = data.data.number;
+  const status = data.data.track_info.latest_status.status;
+  console.log(`Tracking number: ${trackingNumber}, Status: ${status}`);
+
+  // You can add more processing logic here
+  // For example, update a database, send a notification, etc.
 }
