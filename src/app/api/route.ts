@@ -18,9 +18,9 @@ export async function POST(request: NextRequest) {
   }, { status: 200 });
 }
 
-// export async function GET() {
-//   return NextResponse.json({
-//     status: 405,
-//     message: "Method Not Allowed",
-//   }, { status: 405 });
-// }
+export async function GET() {
+  return NextResponse.json({
+    status: 405,
+    message: "Method Not Allowed",
+  }, { status: 405 });
+}
